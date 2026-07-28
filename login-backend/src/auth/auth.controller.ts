@@ -5,15 +5,21 @@ import { AuthService } from './auth.service';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  
+@Post('login')
+login(
+  @Body()
+  body: {
+    email: string;
+    password: string;
+  },
+) {
+  console.log('Request received:', body);
 
-  @Post('login')
-  login(
-    @Body()
-    body: {
-      email: string;
-      password: string;
-    },
-  ) {
-    return this.authService.login(body.email, body.password);
-  }
+  const result = this.authService.login(body.email, body.password);
+
+  console.log('Response returning:', result);
+
+  return result;
+}
 }
