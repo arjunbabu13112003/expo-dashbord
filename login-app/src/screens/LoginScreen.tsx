@@ -9,25 +9,40 @@ export default function LoginScreen(){
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 const navigation = useNavigation<any>();
 
 const handleLogin = async () => {
+  if (!email || !password) {
+    alert("Please fill all fields");
+    return;
+  } 
+  if (email !== "admin@gmail.com" || password !== "1234") {
+    alert("Email or Password is incorrect");
+    return;
+  }
+
   try {
-    const response = await api.post('/auth/login', {
+    setLoading(true);
+
+    const response = await api.post("/auth/login", {
       email,
       password,
     });
 
-    console.log('Success:', response.data);
-    navigation.navigate('Dashboard');
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log('Status:', error.response?.status);
-      console.log('Data:', error.response?.data);
-      console.log('Message:', error.message);
-    } else {
-      console.log(error);
-    }
+    console.log("Response:", response.data);
+
+    navigation.navigate("Dashboard");
+  } catch (error: any) {
+    console.log("Login error:", error.response?.data || error.message);
+
+    alert(
+      error.response?.data?.message ||
+      error.message ||
+      "Login Failed"
+    );
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -64,8 +79,11 @@ const handleLogin = async () => {
            
 
         <Pressable style={styles.button}
+        disabled={loading}
             onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
+            <Text  style={styles.buttonText}>
+              {loading ? "Logging in..." : "Login"}
+            </Text>
         </Pressable>
 
     
